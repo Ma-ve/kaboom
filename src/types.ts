@@ -2973,6 +2973,10 @@ export type SpriteAnim = number | {
 	 */
 	loop?: boolean,
 	/**
+	 * When looping, how many times should it loop?
+	 */
+	maxLoops?: number,
+	/**
 	 * When looping should it move back instead of go to start frame again.
 	 */
 	pingpong?: boolean,
@@ -2990,6 +2994,10 @@ export interface SpriteAnimPlayOpt {
 	 * If this anim should be played in loop.
 	 */
 	loop?: boolean,
+	/**
+	 * When looping, how many times should it loop?
+	 */
+	maxLoops?: number,
 	/**
 	 * When looping should it move back instead of go to start frame again.
 	 */

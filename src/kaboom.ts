@@ -201,7 +201,9 @@ import boomSpriteSrc from "./assets/boom.png"
 interface SpriteCurAnim {
 	name: string,
 	timer: number,
+	currentLoops: number,
 	loop: boolean,
+	maxLoops: number,
 	speed: number,
 	pingpong: boolean,
 	onEnd: () => void,
@@ -3954,6 +3956,10 @@ export default (gopt: KaboomOpt = {}): KaboomCtx => {
 					throw new Error("Sprite anim speed cannot be 0")
 				}
 
+				if (anim.maxLoops > 0 && !anim.loop) {
+					throw new Error("Sprite anim maxLoops cannot be set if loop is false")
+				}
+
 				curAnim.timer += dt() * this.animSpeed
 
 				if (curAnim.timer >= (1 / curAnim.speed)) {
@@ -3963,7 +3969,12 @@ export default (gopt: KaboomOpt = {}): KaboomCtx => {
 
 					if (this.frame < Math.min(anim.from, anim.to) ||
 						this.frame > Math.max(anim.from, anim.to)) {
-						if (curAnim.loop) {
+						if (curAnim.loop && (
+							curAnim.maxLoops === -1 || curAnim.currentLoops <= curAnim.maxLoops
+						)) {
+							if (curAnim.maxLoops !== -1) {
+								curAnim.currentLoops++;
+							}
 							if (curAnim.pingpong) {
 								this.frame -= curAnimDir
 								curAnimDir *= -1
@@ -4016,7 +4027,9 @@ export default (gopt: KaboomOpt = {}): KaboomCtx => {
 					? {
 						name: name,
 						timer: 0,
+						currentLoops: 0,
 						loop: false,
+						maxLoops: -1,
 						pingpong: false,
 						speed: 0,
 						onEnd: () => { },
@@ -4024,7 +4037,9 @@ export default (gopt: KaboomOpt = {}): KaboomCtx => {
 					: {
 						name: name,
 						timer: 0,
+						currentLoops: 0,
 						loop: opt.loop ?? anim.loop ?? false,
+						maxLoops: opt.maxLoops ?? anim.maxLoops ?? -1,
 						pingpong: opt.pingpong ?? anim.pingpong ?? false,
 						speed: opt.speed ?? anim.speed ?? 10,
 						onEnd: opt.onEnd ?? (() => { }),
